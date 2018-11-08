@@ -1,12 +1,11 @@
 package com.kirago.chapter01.controller;
 
+import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.kirago.chapter01.model.Author;
 import com.kirago.chapter01.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -39,7 +38,16 @@ public class AuthorController {
 	@RequestMapping(value = "/{userId:\\d+}", method = RequestMethod.GET)
 	public Author getAuthor(@PathVariable Long userId, HttpServletRequest request) {
 		Author author = this.authorService.findAuthor(userId);
-		if(author)
+		if(author == null) {
+			throw new RuntimeException("查询错误");
+		}
+
+		return author;
+	}
+
+	@RequestMapping(method = RequestMethod.POST)
+	public void add(@RequestBody JSONObject jsonObject) {
+		String userId = jsonObject.getStr
 	}
 
 }
