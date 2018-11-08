@@ -3,6 +3,7 @@ package com.kirago.chapter01.controller;
 import com.kirago.chapter01.model.Author;
 import com.kirago.chapter01.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,6 +34,12 @@ public class AuthorController {
 		param.put("total", authorList.size());
 		param.put("rows", authorList);
 		return param;
+	}
+
+	@RequestMapping(value = "/{userId:\\d+}", method = RequestMethod.GET)
+	public Author getAuthor(@PathVariable Long userId, HttpServletRequest request) {
+		Author author = this.authorService.findAuthor(userId);
+		if(author)
 	}
 
 }
