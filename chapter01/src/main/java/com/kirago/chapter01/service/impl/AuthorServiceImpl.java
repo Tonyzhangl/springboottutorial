@@ -4,6 +4,7 @@ import com.kirago.chapter01.dao.AuthorDao;
 import com.kirago.chapter01.model.Author;
 import com.kirago.chapter01.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ import java.util.List;
  * @Date 2018/11/8 20:10
  * @Version 1.0
  **/
+@Service("authorService")
 public class AuthorServiceImpl implements AuthorService {
 
 	@Autowired

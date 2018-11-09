@@ -12,8 +12,8 @@ import java.util.List;
  * @Version 1.0
  **/
 public interface AuthorDao {
-	int add(AuthorDao authorDao);
-	int update(AuthorDao authorDao);
+	int add(Author author);
+	int update(Author author);
 	int delete(Long id);
 	Author findAuthor(Long id);
 	List<Author> findAuthorList();

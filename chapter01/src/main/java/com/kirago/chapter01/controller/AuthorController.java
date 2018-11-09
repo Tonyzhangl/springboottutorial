@@ -47,7 +47,48 @@ public class AuthorController {
 
 	@RequestMapping(method = RequestMethod.POST)
 	public void add(@RequestBody JSONObject jsonObject) {
-		String userId = jsonObject.getStr
+		String userId = jsonObject.getString("user_id");
+		String realName = jsonObject.getString("real_name");
+		String nickName = jsonObject.getString("nick_name");
+		Author author = new Author();
+		if (author != null) {
+			author.setId(Long.valueOf(userId));
+		}
+		author.setRealName(realName);
+		author.setNickName(nickName);
+		try {
+			this.authorService.add(author);
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("新增错误");
+		}
 	}
+
+	@RequestMapping(value ="/{userId:\\d+}", method = RequestMethod.PUT)
+	public void update(@PathVariable Long userId, @RequestBody JSONObject jsonObject) {
+		Author author = this.authorService.findAuthor(userId);
+		String realName = jsonObject.getString("real_name");
+		String nickName = jsonObject.getString("nick_name");
+		author.setRealName(realName);
+		author.setNickName(nickName);
+		try {
+			this.authorService.update(author);
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("更新错误");
+		}
+	}
+
+	@RequestMapping(value = "/{userId:\\d+}", method = RequestMethod.DELETE)
+	public void delete(@PathVariable Long userId, @RequestBody JSONObject jsonObject) {
+		try {
+			this.authorService.delete(userId);
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException("删除错误");
+		}
+	}
+
+
 
 }
