@@ -41,10 +41,10 @@ public class AuthorDaoImpl implements AuthorDao {
 	@Override
 	public Author findAuthor(Long id) {
 		List<Author> list = jdbcTemplate.query("select * from t_author where id = ?", new Object[]{id}, new BeanPropertyRowMapper(Author.class));
-		if(null != list && list.size() >0) {
+		if (null != list && list.size() > 0) {
 			Author author = list.get(0);
 			return author;
-		}else {
+		} else {
 			return null;
 		}
 	}

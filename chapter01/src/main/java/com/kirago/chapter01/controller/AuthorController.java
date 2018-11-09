@@ -27,7 +27,7 @@ public class AuthorController {
 	private AuthorService authorService;
 
 	@RequestMapping(method = RequestMethod.GET)
-	public Map<String ,Object> getAuthorList(HttpServletRequest request) {
+	public Map<String, Object> getAuthorList(HttpServletRequest request) {
 		List<Author> authorList = this.authorService.findAuthorList();
 		Map<String, Object> param = new HashMap<String, Object>();
 		param.put("total", authorList.size());
@@ -38,7 +38,7 @@ public class AuthorController {
 	@RequestMapping(value = "/{userId:\\d+}", method = RequestMethod.GET)
 	public Author getAuthor(@PathVariable Long userId, HttpServletRequest request) {
 		Author author = this.authorService.findAuthor(userId);
-		if(author == null) {
+		if (author == null) {
 			throw new RuntimeException("查询错误");
 		}
 
@@ -58,13 +58,13 @@ public class AuthorController {
 		author.setNickName(nickName);
 		try {
 			this.authorService.add(author);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("新增错误");
 		}
 	}
 
-	@RequestMapping(value ="/{userId:\\d+}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/{userId:\\d+}", method = RequestMethod.PUT)
 	public void update(@PathVariable Long userId, @RequestBody JSONObject jsonObject) {
 		Author author = this.authorService.findAuthor(userId);
 		String realName = jsonObject.getString("real_name");
@@ -73,7 +73,7 @@ public class AuthorController {
 		author.setNickName(nickName);
 		try {
 			this.authorService.update(author);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("更新错误");
 		}
@@ -83,12 +83,11 @@ public class AuthorController {
 	public void delete(@PathVariable Long userId, @RequestBody JSONObject jsonObject) {
 		try {
 			this.authorService.delete(userId);
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException("删除错误");
 		}
 	}
-
 
 
 }
