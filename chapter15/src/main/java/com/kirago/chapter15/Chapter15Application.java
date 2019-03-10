@@ -1,9 +1,7 @@
 package com.kirago.chapter15;
 
 import com.kirago.chapter15.config.TaskExecutorConfig;
-import com.kirago.chapter15.demo.Demo;
 import com.kirago.chapter15.service.AsyncTaskService;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
