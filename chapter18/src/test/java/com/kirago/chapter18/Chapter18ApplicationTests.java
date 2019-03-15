@@ -1,5 +1,8 @@
 package com.kirago.chapter18;
 
+import com.kirago.chapter18.demobeanfactory.provider.NewsProvider;
+import com.kirago.chapter18.demobeanfactoryapplicationcontextaware.provider.NewsProvideraca;
+import com.kirago.chapter18.demobeanfactorylookupmethod.provider.NewsProviderlu;
 import com.kirago.chapter18.demofactorybean.config.HelloFactoryConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +43,47 @@ public class Chapter18ApplicationTests {
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(HelloFactoryConfig.class);
         System.out.println("helloFactory -> " + context.getBean("helloFactoryBean"));
         System.out.println("&helloFactory -> " + context.getBean("&helloFactoryBean"));
+    }
+
+    @Test
+    public void testFactoryMethod() {
+        String configLocation = "application-factorymethod.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(configLocation);
+        System.out.println("staticHelloFactory -> " + applicationContext.getBean("staticHelloFactory"));
+    }
+
+    @Test
+    public void testBeanFactory() {
+        String configLocation = "application-beanfactory.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(configLocation);
+        NewsProvider newsProvider = (NewsProvider) applicationContext.getBean("newsprovider");
+        System.out.println(newsProvider.getNews());
+        System.out.println(newsProvider.getNews());
+    }
+
+    @Test
+    public void testBeanFactoryaca(){
+        String configLocation = "application-beanfactoryaca.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(configLocation);
+        NewsProvideraca newsProvideraca = (NewsProvideraca) applicationContext.getBean("newsProvider");
+        System.out.println(newsProvideraca.getNews());
+        System.out.println(newsProvideraca.getNews());
+    }
+
+    @Test
+    public void testBeanFactorylu() {
+        String configLocation = "application-beanfactorylu.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(configLocation);
+        NewsProviderlu newsProviderlu = (NewsProviderlu) applicationContext.getBean("newsProvider");
+        System.out.println("newproviderlu -->" + newsProviderlu);
+        System.out.println("news 1 -> " + newsProviderlu.getNews());
+        System.out.println("news 2 -> " + newsProviderlu.getNews());
+    }
+
+    @Test
+    public void testBeanPostProcessor() {
+        String configLocation = "application-beanpostprocessor.xml";
+        ApplicationContext applicationContext = new ClassPathXmlApplicationContext(configLocation);
     }
 
 }
