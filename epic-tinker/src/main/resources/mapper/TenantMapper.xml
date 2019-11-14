@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chinamobile.epic.tinker.dao.TenantMapper">
+    <resultMap id="BaseResultMap" type="com.chinamobile.epic.tinker.entity.TenantTarget">
+        <id property="id" jdbcType="VARCHAR" column="id"/>
+        <result property="businessId" jdbcType="VARCHAR" column="business_id"/>
+        <result property="itemName" jdbcType="VARCHAR" column="item_name"/>
+        <result property="itemDesc" jdbcType="VARCHAR" column="item_desc"/>
+        <result property="itemWeight" jdbcType="DOUBLE" column="item_weight"/>
+        <result property="isEnabled" jdbcType="VARCHAR" column="is_enabled"/>
+        <result property="commentsResult" jdbcType="VARCHAR" column="comments_result"/>
+        <result property="categoryType" jdbcType="VARCHAR" column="category_type"/>
+        <result property="levelItem" jdbcType="VARCHAR" column="level_item"/>
+        <result property="defualtKey" jdbcType="VARCHAR" column="defualt_key"/>
+        <result property="groupId" jdbcType="VARCHAR" column="group_id"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    a.id, a.business_id, a.item_name, a.item_desc, a.item_weight, a.is_Enabled,
+    a.level_id, a.remark, a.comments_result,a.category_type,a.create_date,c.levelItem,c.defualtKey,c.group_id
+  </sql>
+    <select id="getTenantTargetList" parameterType="java.lang.String" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM t_tenants_target_item_business a
+        LEFT JOIN t_tenants_levelSet_target_item b ON a.id=b.target_id
+        INNER JOIN (SELECT group_id,GROUP_CONCAT(item_name) AS levelItem,GROUP_CONCAT(item_key,":",item_value) AS
+        defualtKey
+        FROM t_tenants_level_set_item
+        GROUP BY group_id) c ON b.level_set_group_id=c.group_id
+        WHERE a.business_id=#{businessId}
+        <if test="source!=null and source !=''">
+            AND a.source=#{source}
+        </if>
+    </select>
+
+    <update id="updateCommentResultByID" parameterType="com.chinamobile.epic.tinker.entity.BusinessTarget">
+        update t_tenants_target_item_business set comments_result =#{commentsResult},comments_status ='1'
+        where  id=#{id}
+    </update>
+
+    <select id="getBusinessTargetStatus" parameterType="String" resultType="Map">
+        SELECT
+        category_type,
+        CASE WHEN temp1.unComments = 0 THEN TRUE ELSE FALSE END AS STATUS
+        FROM
+        (
+        SELECT
+        category_type,
+        count( * ) totalCount,
+        sum( CASE WHEN comments_status != '1' THEN 1 ELSE 0 END ) AS unComments,
+        sum( CASE WHEN comments_status = '1' THEN 1 ELSE 0 END ) AS comments
+        FROM t_tenants_target_item_business
+        WHERE business_id = #{businessId}
+        <if test="source!=null and source !=''">
+            AND source=#{source}
+        </if>
+        GROUP BY category_type
+        ORDER BY category_type
+        ) temp1
+    </select>
+
+    <update id="updateTargetTemplate" parameterType="com.chinamobile.epic.tinker.entity.TargetTemplate">
+        UPDATE t_tenants_target_item_template
+        <set>
+            <if test="itemName!=null and itemName!=''">item_name = #{itemName,jdbcType=VARCHAR},</if>
+            <if test="itemDesc!=null and itemDesc!=''">item_desc = #{itemDesc,jdbcType=VARCHAR},</if>
+            <if test="itemWeight!=null and itemWeight!=''">item_weight = #{itemWeight,jdbcType=DOUBLE},</if>
+            <if test="isEnabled!=null and isEnabled!='' ">is_enabled = #{isEnabled,jdbcType=VARCHAR},</if>
+            <if test="remark!=null and remark!='' ">remark = #{remark,jdbcType=VARCHAR},</if>
+            <if test="secondaryItemName!=null and secondaryItemName!=''">secondary_item_name = #{secondaryItemName,jdbcType=VARCHAR},</if>
+            <if test="primaryItemName!=null and primaryItemName!=''">primary_item_name = #{primaryItemName,jdbcType=VARCHAR},</if>
+            <if test="levelSet!=null and levelSet!='' ">level_set = #{categoryType,jdbcType=VARCHAR},</if>
+            create_date=NOW(),
+            version=version+1
+        </set>
+        WHERE id =#{id}
+    </update>
+
+
+    <insert id="insertFile" parameterType="com.chinamobile.epic.tinker.entity.TenantFile">
+        INSERT INTO t_tenant_attached(id, relation_id, file_name, file_type, file_size, file_conent, create_date,org_id,business_id,url,description)
+        VALUES (#{id}, #{relationId}, #{fileName}, #{fileType},#{fileSize},#{fileConent}, now(),#{orgId},#{businessId},#{url},#{description});
+    </insert>
+
+    <insert id="insertBusinessFile" parameterType="java.util.Map">
+        insert  into t_business_estimate_attached (id,bussiness_estimate_id,attached_id)
+        values(#{id},#{bussinessId},#{attacheId});
+    </insert>
+
+    <update id="updateFile" parameterType="com.chinamobile.epic.tinker.entity.TenantFile">
+        update t_tenant_attached
+        <set>
+            <if test="relationId != null and relationId !=''">
+                relation_id = #{relationId},
+            </if>
+            <if test="fileName != null and fileName !=''">
+                file_name = #{fileName},
+            </if>
+            <if test="fileType != null and fileType !=''">
+                file_type = #{fileType},
+            </if>
+            <if test="fileSize != null and fileSize !=''">
+                file_size = #{fileSize},
+            </if>
+            <if test="fileConent == null and fileConent ==''">
+                file_conent = #{fileConent},
+            </if>
+            <if test="orgId == null and orgId ==''">
+                org_id = #{orgId},
+            </if>
+            <if test="orgId == null and orgId ==''">
+                org_id = #{orgId},
+            </if>
+            <if test="businessId == null and businessId ==''">
+                business_id = #{businessId},
+            </if>
+            <if test="description == null and description ==''">
+                description = #{description},
+            </if>
+            create_date = now(),
+        </set>
+        where
+        id = #{id}
+    </update>
+
+    <insert id="postTarget" parameterType="com.chinamobile.epic.tinker.entity.BusinessTarget">
+        insert into
+    </insert>
+
+    <select id="getFileById" parameterType="String" resultType="com.chinamobile.epic.tinker.entity.TenantFile">
+        select id, relation_id, file_name, file_type, file_size, file_conent, create_date,url
+        from t_tenant_attached
+        where
+        id = #{id}
+    </select>
+
+    <select id="getAvgCount" parameterType="String" resultType="Map">
+        SELECT
+        temp1.category_type,
+        round( avg( temp1.resultValue ), 2 ) AS avgResult
+        FROM
+        (
+        SELECT
+        a.comments_result,
+        a.category_type,
+        c.item_key,
+        c.item_value,
+        a.item_weight * c.item_value AS resultValue
+        FROM
+        t_tenants_target_item_business a
+        LEFT JOIN t_tenants_levelSet_target_item b ON a.id = b.target_id
+        INNER JOIN t_tenants_level_set_item c ON b.level_set_group_id = c.group_id
+        WHERE a.source = '0' AND a.comments_result = c.item_key
+        <if test="orgId!=null and orgId !=''">
+            a.org_id=#{orgId}
+        </if>
+        ) temp1
+        GROUP BY temp1.category_type
+    </select>
+    <select id="getTemplate" resultType="java.util.HashMap">
+        select
+        id,
+        item_name,
+        item_desc,
+        item_weight,
+        level_set,
+        category_type
+        from
+        t_tenants_target_item_template
+        where source=#{source} and
+        is_enabled='1';
+    </select>
+    <select id="getComments" resultType="java.util.HashMap">
+        select
+        item_name,
+        item_desc,
+        item_weight,
+        level_set
+        from
+        t_tenants_target_item_business
+        where
+        <if test="source != null and source != ''">
+            source=#{source} and
+        </if>
+        <if test="categoryType != null and categoryType != ''">
+            category_type=#{categoryType} and
+        </if>
+    </select>
+
+
+    <select id="getTenantFile" resultType="com.chinamobile.epic.tinker.entity.TenantFile" parameterType="java.lang.String">
+        select * from t_tenant_attached
+        where
+        business_id = #{businessId}
+    </select>
+
+</mapper>

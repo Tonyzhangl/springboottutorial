@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chinamobile.epic.tinker.dao.BusinessEstimateMapper">
+
+    <resultMap id="BaseResult" type="com.chinamobile.epic.tinker.entity.BusinessEstimate">
+        <id column="id" property="id" jdbcType="BIGINT" javaType="java.lang.String"/>
+        <result column="user_id" property="userId" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result column="business_id" property="businessId" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result column="business_name" property="businessName" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result column="org_id" property="orgId" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result column="org_name" property="orgName" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result column="create_date" property="createDate" jdbcType="BIGINT" javaType="java.lang.String"/>
+        <result column="update_date" property="updateDate" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result column="status" property="status" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result column="status_text" property="statusText" jdbcType="BIGINT" javaType="java.lang.String"/>
+        <result column="source" property="source" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <result column="description" property="description" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        <collection property="tenantFileList" ofType="com.chinamobile.epic.tinker.entity.TenantFile">
+            <id column="id" property="id" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <result column="file_name" property="fileName" jdbcType="VARCHAR" javaType="java.lang.String"/>
+            <result column="file_size" property="fileSize" jdbcType="VARCHAR" javaType="java.lang.String"/>
+        </collection>
+    </resultMap>
+    <insert id="insert" parameterType="com.chinamobile.epic.tinker.entity.BusinessEstimate">
+        insert into
+        t_business_estimate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="createDate != null">
+                create_date,
+            </if>
+            <if test="updateDate != null">
+                update_date,
+            </if>
+            <if test="businessId != null">
+                business_id,
+            </if>
+            <if test="businessName != null">
+                business_name,
+            </if>
+            <if test="orgId != null">
+                org_id,
+            </if>
+            <if test="orgName != null">
+                org_name,
+            </if>
+            <if test="source != null">
+                source,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="statusText != null">
+                status_text,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">
+                #{id},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="createDate != null">
+                #{createDate},
+            </if>
+            <if test="updateDate != null">
+                #{updateDate},
+            </if>
+            <if test="businessId != null">
+                #{businessId},
+            </if>
+            <if test="businessName != null">
+                #{businessName},
+            </if>
+            <if test="orgId != null">
+                #{orgId},
+            </if>
+            <if test="orgName != null">
+                #{orgName},
+            </if>
+            <if test="source != null">
+                #{source},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="statusText != null">
+                #{statusText},
+            </if>
+            <if test="description != null">
+                #{description},
+            </if>
+        </trim>
+    </insert>
+
+    <select id="selectListByUserId" resultType="java.util.HashMap" parameterType="java.util.HashMap">
+        select a.id,a.business_id as "businessId",a.business_name as "businessName",a.description,d.id as fileId,
+        a.org_id as "orgId",a.org_name as "organizationName",a.create_date,a.update_date,a.status,a.status_text,
+        b.totalCommentResult
+        from
+        t_business_estimate as a
+        left join t_tenants_target_item_comments as b
+        on a.id = e.estimate_id
+        and a.status = e.category_type
+        where
+        a.deleted = 0
+        <if test="userId != null and userId !=''">
+            and a.user_id= #{userId}
+        </if>
+        <if test="source != null">
+            and a.source = #{source}
+        </if>
+        order by a.create_date desc
+    </select>
+
+    <select id="selectOrgListByUserId" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select a.status,a.id,a.business_id,a.status,a.status_text,
+        a.create_date,a.update_date,b.name as organizationName, c.totalCommentResult
+        from
+        t_business_estimate as a
+        left join
+        t_organization as b
+        on a.business_id = b.id
+        left join t_tenants_target_item_comments as c
+        on a.id = c.estimate_id
+        and a.status =c.category_type
+        where
+        a.deleted = 0
+        <if test="userId != null and userId !=''">
+            and a.user_id= #{userId}
+        </if>
+        <if test="source != null">
+            and a.source = #{source}
+        </if>
+        order by a.create_date desc
+    </select>
+
+
+    <select id="selectDetailById" parameterType="java.lang.String" resultMap="BaseResult">
+            select a.id,a.business_id as "businessId",a.business_name as businessName,a.description,
+            a.org_id as orgId,a.org_name as organizationName,a.create_date as "createDate",a.update_date as "updateDate",a.status,a.status_text as "statusText",
+            a.source,a.description,c.file_name as fileName,c.file_size as fileSize, c.url as fileUrl,c.id as fileId
+            from
+            t_business_estimate as a
+            inner join t_business_estimate_attached as b
+            on a.id = b.bussiness_estimate_id
+            inner join t_tenant_attached as c
+            on c.id = b.attached_id
+            where
+            a.id =#{id}
+        </select>
+
+    <select id="selectStatusByBusinessId" parameterType="java.lang.String" resultType="com.chinamobile.epic.tinker.entity.BusinessEstimate">
+            select * from
+            t_business_estimate
+            where
+            business_id = #{businessId}
+            and deleted = 0
+        </select>
+
+    <select id="getOrgBusinessEstimate" parameterType="java.lang.String" resultType="java.util.HashMap">
+            select a.id,a.create_date as createDate,a.update_date as updateDate,a.source,a.status,a.status_text,
+            a.description,b.name as orgName
+            from
+            t_business_estimate as a
+            left join
+            t_organization as b
+            on a.business_id = b.id
+            where a.id = #{id}
+       </select>
+
+    <update id="delete"  parameterType="java.lang.String">
+            update
+             t_business_estimate
+            set
+            deleted = 1
+            where
+            id = #{id}
+      </update>
+
+    <update id="updateBusinessEstimate" parameterType="java.util.HashMap">
+        update
+        t_business_estimate
+        <set>
+            <if test="source != null">
+                source = #{source},
+            </if>
+            <if test="userId != null">
+                user_id = #{t_business_estimate},
+            </if>
+            <if test="businessId != null">
+                business_id = #{businessId},
+            </if>
+            <if test="attachedId != null">
+                attached_id =#{attachedId},
+            </if>
+            <if test="createDate != null">
+                create_date = #{createDate},
+            </if>
+            <if test="updateDate != null">
+                update_date = #{updateDate},
+            </if>
+            <if test="status != null">
+                status =  #{status},
+            </if>
+            <if test="statusText != null">
+                status_text =  #{statusText},
+            </if>
+        </set>
+        where
+        id = #{id}
+    </update>
+
+</mapper>
