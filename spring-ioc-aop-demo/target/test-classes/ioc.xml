@@ -1,0 +1,12 @@
+<beans>
+    <bean id="wheel" class="com.kirago.ioc.Wheel">
+        <property name="nickname" value="Michelin" />
+        <property name="size" value="20" />
+    </bean>
+
+    <bean id="car" class="com.kirago.ioc.Car">
+        <property name="name" value="Mercedes Benz G 500"/>
+        <property name="price" value="1000"/>
+        <property name="wheel" ref="wheel"/>
+    </bean>
+</beans>
