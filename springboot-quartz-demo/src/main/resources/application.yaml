@@ -1,0 +1,81 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    druid:
+      url: jdbc:mysql://localhost:3306/quartz?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=GMT%2B8
+      username: root
+      password: admin@mysql
+      driver-class-name: com.mysql.jdbc.Driver
+      initial-size: 1
+      max-active: 20
+      min-idle: 1
+      max-wait: 10000
+      pool-prepared-statements: true
+      max-open-prepared-statements: 20
+      validation-query: SELECT 1 FROM DUAL
+      validation-query-timeout: 5000
+      test-on-borrow: false
+      test-on-return: false
+      test-while-idle: true
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 30000
+      max-evictable-idle-time-millis: 60000
+      removeAbandoned: true
+      removeAbandonedTimeout: 1800
+      connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+      max-pool-prepared-statement-per-connection-size: 20
+      filters: stat,wall
+    type: com.alibaba.druid.pool.DruidDataSource
+    mvc:
+      throw-exception-if-no-handler-found: true #
+    resources:
+      add-mappings: false # don't build reflection for resources
+    #--- mybatis configurations ---#
+    #mybatis:
+    #  mapper-locations: classpath:mapper/**/*.xml
+    #  type-aliases-package: com.developlee.quartz.models.domain.vo
+    #--- mybatis configurations ---#
+    #--- custom configurations ---#
+  quartz:
+    # 参见 org.springframework.boot.autoconfigure.quartz.QuartzProperties
+    job-store-type: jdbc
+    wait-for-jobs-to-complete-on-shutdown: true
+    scheduler-name: SpringBootDemoScheduler
+    properties:
+      org.quartz.threadPool.threadCount: 5
+      org.quartz.threadPool.threadPriority: 5
+      org.quartz.threadPool.threadsInheritContextClassLoaderOfInitializingThread: true
+      org.quartz.jobStore.misfireThreshold: 5000
+      org.quartz.jobStore.class: org.quartz.impl.jdbcjobstore.JobStoreTX
+      org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+      # 在调度流程的第一步，也就是拉取待即将触发的triggers时，是上锁的状态，即不会同时存在多个线程拉取到相同的trigger的情况，也就避免的重复调度的危险。参考：https://segmentfault.com/a/1190000015492260
+      org.quartz.jobStore.acquireTriggersWithinLock: true
+logging:
+  level:
+    root: info
+
+mybatis:
+  configuration:
+    # 下划线转驼峰
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath:mappers/*.xml
+  type-aliases-package: com.kirago.quartz.demo.entity
+
+#mapper:
+#  mappers:
+#  - tk.mybatis.mapper.common.Mapper
+#  not-empty: true
+#  style: camelhump
+#  wrap-keyword: "`{0}`"
+#  safe-delete: true
+#  safe-update: true
+#  identity: MYSQL
+pagehelper:
+  auto-dialect: true
+  helper-dialect: mysql
+  reasonable: true
+  params: count=countSql
+#--- custom configurations ---#
+
