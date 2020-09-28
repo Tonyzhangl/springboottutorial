@@ -40,7 +40,9 @@ spring:
     #--- custom configurations ---#
   quartz:
     # 参见 org.springframework.boot.autoconfigure.quartz.QuartzProperties
-    job-store-type: jdbc
+    job-store-type: jdbc #作用于持久化调度任务
+#    jdbc:
+#      initialize-schema: always #在运行初始的时候执行初始化,最好维护一个sql脚本用于手动执行。
     wait-for-jobs-to-complete-on-shutdown: true
     scheduler-name: SpringBootDemoScheduler
     properties:
